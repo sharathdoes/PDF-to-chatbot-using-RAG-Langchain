@@ -1,0 +1,30 @@
+# Ignore .env file containing sensitive data
+.env
+
+# Ignore the virtual environment directory
+env/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ignore Streamlit session state and logs
+.streamlit/
+
+# Ignore logs
+*.log
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore test reports and coverage
+coverage/
+*.coverage
+
+# Ignore database files
+*.db
