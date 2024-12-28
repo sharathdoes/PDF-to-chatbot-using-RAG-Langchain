@@ -1,7 +1,6 @@
 # Operating System Chatbot
 
-This is a chatbot application built to provide theoretical answers related to operating systems. It uses advanced natural language processing techniques to respond to user queries about various topics within operating systems, such as process management, memory management, file systems, synchronization, and more.
-
+For instance, I took my operating system material and this is a chatbot application built ito provide theoretical answers related to operating systems. 
 ## Features
 
 - **Theoretical Q&A**: Answers any theoretical questions related to operating systems.
@@ -63,8 +62,4 @@ To get started, clone this repository and install the necessary dependencies:
 3. Use the text input to ask questions about operating systems.
 4. Click the "Documents Embedding" button to initialize the knowledge base with documents (e.g., your OS notes in PDF format).
 5. The chatbot will answer any theoretical questions based on the documents and its internal model.
-
-## Contributing
-
-Feel free to fork the repository, submit issues, and make pull requests. Contributions are always welcome!
 
