@@ -42,7 +42,7 @@ def vector_embedding():
         
         # Extract text from the PDF using pdfplumber
         full_text = ""
-        with pdfplumber.open("./OS_NOTES.pdf") as pdf:
+        with pdfplumber.open("dataset/OS_NOTES.pdf") as pdf:
             for page in pdf.pages:
                 full_text += page.extract_text()
 
