@@ -18,7 +18,7 @@ load_dotenv()
 # Load the GROQ and OpenAI API keys
 groq_api_key = os.getenv('GROQ_API_KEY')
 
-st.title("Chatgroq With Llama3 Demo")
+st.title("Operating systems")
 
 # Define the LLM
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="Llama3-8b-8192")
