@@ -15,10 +15,10 @@ import pdfplumber
 
 load_dotenv()
 
-# Load the GROQ and OpenAI API keys
+# Load the GROQ API key
 groq_api_key = os.getenv('GROQ_API_KEY')
 
-st.title("Operating systems")
+st.title("Operating Systems Query Platform")
 
 # Define the LLM
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="Llama3-8b-8192")
@@ -35,49 +35,33 @@ prompt = ChatPromptTemplate.from_template(
     """
 )
 
-def vector_embedding():
+VECTOR_STORE_PATH = "vector_store/faiss_index"  # Path to save/load the FAISS index
+
+
+def load_vector_store():
+    """Loads the vector store from disk."""
     if "vectors" not in st.session_state:
-        # Use HuggingFace Embeddings with BAAI model
-        st.session_state.embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
-        
-        # Extract text from the PDF using pdfplumber
-        full_text = ""
-        with pdfplumber.open("dataset/OS_NOTES.pdf") as pdf:
-            for page in pdf.pages:
-                full_text += page.extract_text()
+        if os.path.exists(VECTOR_STORE_PATH):
+            st.session_state.vectors = FAISS.load_local(
+                VECTOR_STORE_PATH,
+                HuggingFaceEmbeddings(model_name="BAAI/bge-small-en"),
+                allow_dangerous_deserialization=True  # Enable this flag
+            )
+            st.write("Vector Store Loaded!")
+        else:
+            st.error("Vector Store not found. Please initialize it first.")
 
-        # Check if text extraction is successful
-        if not full_text.strip():
-            st.error("No text could be extracted from the PDF.")
-            return
 
-        # Create a list of Document objects
-        st.session_state.docs = [Document(page_content=full_text)]
+# Load the vector store directly when the app runs
+load_vector_store()
 
-        # Split documents into chunks
-        st.session_state.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
-        st.session_state.final_documents = st.session_state.text_splitter.split_documents(st.session_state.docs)
-
-        # Create a vector store with the embeddings
-        st.session_state.vectors = FAISS.from_documents(
-            st.session_state.final_documents, st.session_state.embeddings
-        )
-
-        st.write("Vector Store Created!")  # Confirm the vector store is created
-
-# Input field for question
 prompt1 = st.text_input("Enter Your Question From Documents")
-
-# Button to initialize document embeddings
-if st.button("Documents Embedding"):
-    vector_embedding()
-    st.write("Vector Store DB Is Ready")
 
 if prompt1:
     # Check if vectors are initialized
-   if "vectors" not in st.session_state:
-        st.error("Vectors are not initialized. Please click 'Documents Embedding' to initialize the vector store.")
-   else:
+    if "vectors" not in st.session_state:
+        st.error("Vectors are not initialized. Please initialize it first.")
+    else:
         # Create the document chain
         document_chain = create_stuff_documents_chain(llm, prompt)
         retriever = st.session_state.vectors.as_retriever()
@@ -86,4 +70,7 @@ if prompt1:
         # Measure response time
         start = time.process_time()
         response = retrieval_chain.invoke({'input': prompt1})
+        elapsed_time = time.process_time() - start
+        
         st.write(response['answer'])  # Only print the answer
+        st.write(f"Response Time: {elapsed_time:.2f} seconds")
