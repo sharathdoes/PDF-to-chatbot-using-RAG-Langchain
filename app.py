@@ -15,7 +15,7 @@ load_dotenv()
 # Load the GROQ API key
 groq_api_key = os.getenv('GROQ_API_KEY')
 
-st.title("Operating Systems Query Platform")
+st.title("Netflix Movies Query Platform")
 
 # Define the LLM
 llm = ChatGroq(groq_api_key=groq_api_key, model_name="Llama3-8b-8192")
@@ -32,7 +32,7 @@ prompt = ChatPromptTemplate.from_template(
     """
 )
 
-VECTOR_STORE_PATH = "vector_store/faiss_index"  # Path to save/load the FAISS index
+VECTOR_STORE_PATH = "netflix_store/faiss_index"  # Path to save/load the FAISS index
 
 
 def load_vector_store():

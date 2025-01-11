@@ -4,26 +4,33 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 import os
 from dotenv import load_dotenv
-import time
-import pdfplumber
+import pandas as pd
 
 load_dotenv()
 
-VECTOR_STORE_PATH = "vectr_store/faiss_index"  # Path to save/load the FAISS index
+VECTOR_STORE_PATH = "netflix_store/faiss_index"  # Path to save/load the FAISS index
 
 def initialize_vector_store():
     """Initializes the vector store, creates embeddings, and saves the index."""
     embeddings = HuggingFaceEmbeddings(model_name="BAAI/bge-small-en")
 
-    # Extract text from the PDF using pdfplumber
-    full_text = ""
-    with pdfplumber.open("dataset/OS_NOTES.pdf") as pdf:
-        for page in pdf.pages:
-            full_text += page.extract_text()
+    # Load the CSV file
+    csv_file_path = "dataset/netflix_titles_short.csv"
+    if not os.path.exists(csv_file_path):
+        print(f"File {csv_file_path} does not exist.")
+        return
+
+    # Read CSV and concatenate relevant text columns
+    try:
+        df = pd.read_csv(csv_file_path)
+        full_text = " ".join(df.fillna("").apply(lambda row: " ".join(row.values.astype(str)), axis=1))
+    except Exception as e:
+        print(f"Error reading CSV file: {e}")
+        return
 
     # Check if text extraction is successful
     if not full_text.strip():
-        print("No text could be extracted from the PDF.")
+        print("No text could be extracted from the CSV.")
         return
 
     # Create a list of Document objects
